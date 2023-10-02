@@ -4,16 +4,14 @@
 #include <cctype>
 #include <conio.h>
 
-// #define _CRT_SECURE_NO_WARNINGS
-
 // Variables
-constexpr auto height = 25u;
-constexpr auto width = 80u;
+const unsigned height = 25u;
+const unsigned width = 80u;
 
 char map[height][width];
 
-constexpr auto obj_max = 20u; 
-uint32_t obj_count = 0;
+const unsigned obj_max = 20u; 
+unsigned obj_count = 0;
 
 struct Point
 {
@@ -22,7 +20,7 @@ struct Point
 
 struct Item
 {
-    char name[20];
+    char name[20]{};
 };
 
 struct Object
@@ -31,8 +29,8 @@ struct Object
     char type{};
     Point position{};
 
-    char requirement[80]{};   // требование, необходимое условие в виде текста
-    char required_item[20]{}; // Название требуемого предмета
+    char requirement[80]{};   
+    char required_item[20]{}; 
 };
 
 Object* objects[obj_max]{};
@@ -47,7 +45,7 @@ void AddObject( Object* obj)
 
 void ClearObjects()
 {
-    for (size_t i = 0; i < obj_count; i++)
+    for (unsigned i = 0; i < obj_count; ++i)
     {
         delete objects[i];
         objects[i] = nullptr;
@@ -81,7 +79,7 @@ void LoadMapFromFile(const char* file_name)
 
     if (ifs.is_open())
     {
-        uint32_t line = 0;
+        unsigned line = 0;
 
         while (!ifs.eof())      
             ifs.getline(location._map[line++], width);
@@ -137,7 +135,7 @@ void PutLocationOnMap()
 
 void PutObjectsOnMap()
 {
-    for (uint32_t i = 0; i < obj_count; i++)
+    for (unsigned i = 0; i < obj_count; i++)
         map[objects[i]->position.y][objects[i]->position.x] = objects[i]->type;
 }
 
@@ -150,9 +148,9 @@ Object* GetObjectBy_XY(int x, int y)
     return nullptr;
 }
 
-uint32_t GetPlayerItemCount(const char* item_name)
+unsigned GetPlayerItemCount(const char* item_name)
 {
-    uint32_t counter = 0;
+    unsigned counter = 0;
 
     for (size_t i = 0; i < 20u; i++)   
         if (strcmp(player.inventory[i].name, item_name) == 0)
@@ -171,9 +169,9 @@ void AddItemToInventory(Item item)
         }
 }
 
-void RemoveItemsFromInventory(const char* item_name, uint32_t count)
+void RemoveItemsFromInventory(const char* item_name, unsigned count)
 {
-    uint32_t counter = GetPlayerItemCount(item_name);
+    unsigned counter = GetPlayerItemCount(item_name);
 
     if (counter >= count)  
         for (size_t i = 0; i < 20u; i++)       
@@ -253,10 +251,10 @@ void StartDialogWithObject(Object* obj)
 void PlayerLoadLocation()
 {
     char c[100];
-    sprintf_s(c, "map_%d_%d.txt", player.current_loc.x, player.current_loc.y);
+    sprintf_s(c, "maps/map_%d_%d.txt", player.current_loc.x, player.current_loc.y);
     LoadMapFromFile(c);
 
-    sprintf_s(c, "obj_%d_%d.txt", player.current_loc.x, player.current_loc.y);
+    sprintf_s(c, "data/obj_%d_%d.txt", player.current_loc.x, player.current_loc.y);
     LoadObjectsFromFile(c);
 }
 
@@ -264,7 +262,7 @@ void RenderMap()
 {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD{});
 
-    for (uint32_t i = 0; i < height; i++)
+    for (unsigned i = 0u; i < height; ++i)
         printf("%s \n", map[i]);
 }
 
@@ -398,7 +396,7 @@ void HandleEvents()
 
 int main()
 {
-    char path[]{ "map_0_0.txt" };
+    char path[]{ "data/map_0_0.txt" };
     LoadPlayer();
     PlayerLoadLocation();
     
@@ -409,7 +407,7 @@ int main()
         PlayerPutOnMap();
         PutObjectsOnMap();
         RenderMap();
-        Sleep(50);
+        Sleep(20);
     } while (!IsKeyPressed(VK_ESCAPE));
     
     SavePlayer(); 
